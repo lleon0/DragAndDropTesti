@@ -14,6 +14,7 @@ import android.view.View.OnDragListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.GridLayout;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -60,22 +61,24 @@ public class MainActivity extends AppCompatActivity {
                     // do nothing
                     break;
                 case DragEvent.ACTION_DRAG_ENTERED:
-                    v.setBackgroundDrawable(enterShape);
+                    v.setBackground(enterShape);
                     break;
                 case DragEvent.ACTION_DRAG_EXITED:
-                    v.setBackgroundDrawable(normalShape);
+                    v.setBackground(normalShape);
                     break;
                 case DragEvent.ACTION_DROP:
                     // Dropped, reassign View to ViewGroup
                     View view = (View) event.getLocalState();
                     ViewGroup owner = (ViewGroup) view.getParent();
                     owner.removeView(view);
-                    LinearLayout container = (LinearLayout) v;
+                    //LinearLayout container = (LinearLayout) v;
+                    GridLayout container = (GridLayout) v;
                     container.addView(view);
                     view.setVisibility(View.VISIBLE);
                     break;
                 case DragEvent.ACTION_DRAG_ENDED:
-                    v.setBackgroundDrawable(normalShape);
+                    //v.setBackgroundDrawable(normalShape);
+                    v.setBackground(normalShape);
                 default:
                     break;
             }
