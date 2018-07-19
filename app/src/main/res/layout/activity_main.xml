@@ -1,64 +1,175 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:columnCount="2"
-    android:columnWidth="320dp"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:rowCount="2"
-    android:stretchMode="columnWidth" >
+    android:keepScreenOn="true"
+    android:baselineAligned="false" >
+
+    <Button android:id="@+id/timerButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Timer paused"
+        android:onClick="timerButtonPressed" />
+
+    <Button android:id="@+id/addTrackButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/timerButton"
+        android:text="LISÄÄ RATA"
+        android:onClick="addTrackButtonPressed" />
+
+    <Button android:id="@+id/deleteTrackButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/addTrackButton"
+        android:visibility="gone"
+        android:text="POISTA RATA"
+        android:onClick="deleteTrackButtonPressed" />
+
+    <Button android:id="@+id/addSwimmerButtonOne"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/deleteTrackButton"
+        android:text="LISÄÄ UIMARI 1"
+        android:onClick="addSwimmerButtonOnePressed" />
+
+    <Button android:id="@+id/addSwimmerButtonTwo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/addSwimmerButtonOne"
+        android:text="LISÄÄ UIMARI 2"
+        android:onClick="addSwimmerButtonTwoPressed" />
+
+    <Button android:id="@+id/addSwimmerButtonThree"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/addSwimmerButtonTwo"
+        android:text="LISÄÄ UIMARI 3"
+        android:onClick="addSwimmerButtonThreePressed" />
+
+    <Button android:id="@+id/addSwimmerButtonFour"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/addSwimmerButtonThree"
+        android:text="LISÄÄ UIMARI 4"
+        android:onClick="addSwimmerButtonFourPressed" />
 
     <LinearLayout
-        android:id="@+id/topleft"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
-        android:layout_row="0"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/timerButton"
+        android:orientation="horizontal" >
+
+    <GridLayout
+        android:id="@+id/firstTrack"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:columnCount="2"
+        android:rowCount="3"
+        android:layout_gravity="fill"
         android:background="@drawable/shape" >
 
-        <ImageView
-            android:id="@+id/myimage1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher" />
-    </LinearLayout>
+    </GridLayout>
 
-    <LinearLayout
-        android:id="@+id/topright"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
+    <GridLayout
+        android:id="@+id/secondTrack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:rowCount="3"
+        android:layout_gravity="fill"
         android:background="@drawable/shape" >
 
-        <ImageView
-            android:id="@+id/myimage2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher" />
-    </LinearLayout>
+    </GridLayout>
 
-    <LinearLayout
-        android:id="@+id/bottomleft"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
+    <GridLayout
+        android:id="@+id/thirdTrack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:rowCount="3"
+        android:layout_gravity="fill"
         android:background="@drawable/shape" >
 
-        <ImageView
-            android:id="@+id/myimage3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher" />
-    </LinearLayout>
+    </GridLayout>
 
-    <LinearLayout
-        android:id="@+id/bottomright"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
+    <GridLayout
+        android:id="@+id/fourthTrack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:rowCount="3"
+        android:layout_gravity="fill"
         android:background="@drawable/shape" >
 
-        <ImageView
-            android:id="@+id/myimage4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher" />
+    </GridLayout>
+
+    <GridLayout
+        android:id="@+id/trashcan"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:columnCount="4"
+        android:rowCount="3"
+        android:visibility="gone" >
+
+        <LinearLayout
+            android:id="@+id/swimmerbox1"
+            android:layout_width="200dp"
+            android:layout_height="420px"
+            android:layout_margin="10dp"
+            android:background="@drawable/zone0"
+            android:orientation="vertical">
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/swimmerbox2"
+            android:layout_width="200dp"
+            android:layout_height="420px"
+            android:layout_margin="10dp"
+            android:background="@drawable/zone1"
+            android:orientation="vertical">
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/swimmerbox3"
+            android:layout_width="200dp"
+            android:layout_height="420px"
+            android:layout_margin="10dp"
+            android:background="@drawable/zone2"
+            android:orientation="vertical">
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/swimmerbox4"
+            android:layout_width="200dp"
+            android:layout_height="420px"
+            android:layout_margin="10dp"
+            android:background="@drawable/zone3"
+            android:orientation="vertical">
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/swimmerbox5"
+            android:layout_width="200dp"
+            android:layout_height="420px"
+            android:layout_margin="10dp"
+            android:background="@drawable/zone4"
+            android:orientation="vertical">
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/swimmerbox6"
+            android:layout_width="200dp"
+            android:layout_height="420px"
+            android:layout_margin="10dp"
+            android:background="@drawable/zone5"
+            android:orientation="vertical">
+        </LinearLayout>
+
+    </GridLayout>
+
+
     </LinearLayout>
 
-</GridLayout>
+</RelativeLayout>
