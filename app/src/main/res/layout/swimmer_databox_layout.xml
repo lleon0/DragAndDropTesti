@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="80dp"
+    android:layout_height="80dp"
+    android:orientation="vertical"
+    android:background="@drawable/swimmer_databox_background"
+    android:layout_margin="3dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Perkele"
+        android:textColor="#CC0000"
+        android:layout_margin="2dp"/>
+
+</LinearLayout>
