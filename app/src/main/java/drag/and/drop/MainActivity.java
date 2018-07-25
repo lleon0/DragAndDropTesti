@@ -1,6 +1,8 @@
 package drag.and.drop;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.ClipData;
@@ -25,17 +27,18 @@ public class MainActivity extends AppCompatActivity {
 
     LinearLayout swimmerbox1, swimmerbox2, swimmerbox3, swimmerbox4, swimmerbox5, swimmerbox6;
 
-    Boolean timerRunning = false;
+    Boolean timerRunning = false, previousAlertDone = true, onTrack = true;
     Boolean box1inUse = false, box2inUse = false, box3inUse = false, box4inUse = false, box5inUse = false, box6inUse = false;
+    Boolean trackOneInUse = true, trackTwoInUse = false, trackThreeInUse = false, trackFourInUse = false;
 
-    Button timerButton, addTrackButton, deleteTrackButton;
+    Button timerButton, addTrackButton;
     Button addSwimmerButtonOne, addSwimmerButtonTwo, addSwimmerButtonThree, addSwimmerButtonFour;
 
-    int tracks = 1, totalColumns = 2, totalSwimmers = 0;
+    int totalColumns = 2, totalSwimmers = 0, removeTrack = 0;
     int swimmersTrackOne = 0, swimmersTrackTwo = 0, swimmersTrackThree = 0, swimmersTrackFour = 0;
 
-    View viewBox;
-    ViewGroup ownerViewGroup;
+    View viewBox, lastBox;
+    ViewGroup ownerViewGroup, lastOwner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,13 +72,14 @@ public class MainActivity extends AppCompatActivity {
 
         timerButton = findViewById(R.id.timerButton);
         addTrackButton = findViewById(R.id.addTrackButton);
-        deleteTrackButton = findViewById(R.id.deleteTrackButton);
         addSwimmerButtonOne = findViewById(R.id.addSwimmerButtonOne);
         addSwimmerButtonTwo = findViewById(R.id.addSwimmerButtonTwo);
         addSwimmerButtonThree = findViewById(R.id.addSwimmerButtonThree);
         addSwimmerButtonFour = findViewById(R.id.addSwimmerButtonFour);
 
         setSize();
+        columnAndTrackManager();
+        swimmerBoxManager();
     }
 
     public void setSize(){
@@ -85,52 +89,6 @@ public class MainActivity extends AppCompatActivity {
         wm.getDefaultDisplay().getMetrics(displayMetrics);
         int screenWidth = displayMetrics.widthPixels;
         int screenHeight = displayMetrics.heightPixels;
-
-        if (tracks == 1){
-            //ratoja on 1
-            firstTrack.getLayoutParams().width = (int) (screenWidth*((double) 2048/2048));
-            firstTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
-            firstTrack.requestLayout();
-        } else if (tracks == 2){
-            //ratoja on 2
-            firstTrack.getLayoutParams().width = (int) (screenWidth*((double) 1024/2048));
-            firstTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
-            firstTrack.requestLayout();
-
-            secondTrack.getLayoutParams().width = (int) (screenWidth*((double) 1024/2048));
-            secondTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
-            secondTrack.requestLayout();
-        } else if (tracks == 3){
-            //ratoja on 3
-            firstTrack.getLayoutParams().width = (int) (screenWidth*((double) 682/2048));
-            firstTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
-            firstTrack.requestLayout();
-
-            secondTrack.getLayoutParams().width = (int) (screenWidth*((double) 682/2048));
-            secondTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
-            secondTrack.requestLayout();
-
-            thirdTrack.getLayoutParams().width = (int) (screenWidth*((double) 682/2048));
-            thirdTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
-            thirdTrack.requestLayout();
-        } else if (tracks == 4){
-            //ratoja on 4
-            firstTrack.getLayoutParams().width = (int) (screenWidth*((double) 512/2048));
-            firstTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
-            firstTrack.requestLayout();
-
-            secondTrack.getLayoutParams().width = (int) (screenWidth*((double) 512/2048));
-            secondTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
-            secondTrack.requestLayout();
-
-            thirdTrack.getLayoutParams().width = (int) (screenWidth*((double) 512/2048));
-            thirdTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
-            thirdTrack.requestLayout();
-
-            fourthTrack.getLayoutParams().width = (int) (screenWidth*((double) 512/2048));
-            fourthTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
-            fourthTrack.requestLayout();
-        }
 
         swimmerbox1.getLayoutParams().width = (int) (screenWidth*((double) 470/2048));
         swimmerbox1.getLayoutParams().height = (int) (screenHeight*((double) 420/1536));
@@ -157,6 +115,226 @@ public class MainActivity extends AppCompatActivity {
         swimmerbox6.requestLayout();
     }
 
+    public void columnAndTrackManager(){
+        //get screen resolution
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE); // the results will be higher than using the activity context object or the getWindowManager() shortcut
+        wm.getDefaultDisplay().getMetrics(displayMetrics);
+        int screenWidth = displayMetrics.widthPixels;
+        int screenHeight = displayMetrics.heightPixels;
+
+        swimmersTrackOne = firstTrack.getChildCount();
+        swimmersTrackTwo = secondTrack.getChildCount();
+        swimmersTrackThree = thirdTrack.getChildCount();
+        swimmersTrackFour = fourthTrack.getChildCount();
+
+        totalSwimmers = swimmersTrackOne + swimmersTrackTwo + swimmersTrackThree + swimmersTrackFour;
+
+        //Toast.makeText(MainActivity.this, "Uimareita radalla: " + totalSwimmers, Toast.LENGTH_SHORT).show();
+
+        //track 1
+        if (trackOneInUse){
+            if (swimmersTrackOne <= 3){
+                firstTrack.setColumnCount(1);
+                firstTrack.getLayoutParams().width = (int) (screenWidth*((double) 512/2048));
+                firstTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
+                firstTrack.requestLayout();
+            } else if (swimmersTrackOne >= 4){
+                firstTrack.setColumnCount(2);
+                firstTrack.getLayoutParams().width = (int) (screenWidth*((double) 1024/2048));
+                firstTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
+                firstTrack.requestLayout();
+            } else if (swimmersTrackOne >= 7){
+                firstTrack.setColumnCount(3);
+                firstTrack.getLayoutParams().width = (int) (screenWidth*((double) 1536/2048));
+                firstTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
+                firstTrack.requestLayout();
+            } else if (swimmersTrackOne == 10){
+                firstTrack.setColumnCount(4);
+                firstTrack.getLayoutParams().width = (int) (screenWidth*((double) 2048/2048));
+                firstTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
+                firstTrack.requestLayout();
+            }
+        }
+
+        //track 2
+        if (trackTwoInUse){
+            if (swimmersTrackTwo <= 3){
+                secondTrack.setColumnCount(1);
+                secondTrack.getLayoutParams().width = (int) (screenWidth*((double) 512/2048));
+                secondTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
+                secondTrack.requestLayout();
+            } else if (swimmersTrackTwo >= 4){
+                secondTrack.setColumnCount(2);
+                secondTrack.getLayoutParams().width = (int) (screenWidth*((double) 1024/2048));
+                secondTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
+                secondTrack.requestLayout();
+            } else if (swimmersTrackTwo >= 7){
+                secondTrack.setColumnCount(3);
+                secondTrack.getLayoutParams().width = (int) (screenWidth*((double) 1536/2048));
+                secondTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
+                secondTrack.requestLayout();
+            } else if (swimmersTrackTwo == 10){
+                secondTrack.setColumnCount(4);
+                secondTrack.getLayoutParams().width = (int) (screenWidth*((double) 2048/2048));
+                secondTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
+                secondTrack.requestLayout();
+            }
+        }
+
+        //track 3
+        if (trackThreeInUse){
+            if (swimmersTrackThree <= 3){
+                thirdTrack.setColumnCount(1);
+                thirdTrack.getLayoutParams().width = (int) (screenWidth*((double) 512/2048));
+                thirdTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
+                thirdTrack.requestLayout();
+            } else if (swimmersTrackThree >= 4){
+                thirdTrack.setColumnCount(2);
+                thirdTrack.getLayoutParams().width = (int) (screenWidth*((double) 1024/2048));
+                thirdTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
+                thirdTrack.requestLayout();
+            } else if (swimmersTrackThree >= 7){
+                thirdTrack.setColumnCount(3);
+                thirdTrack.getLayoutParams().width = (int) (screenWidth*((double) 1536/2048));
+                thirdTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
+                thirdTrack.requestLayout();
+            } else if (swimmersTrackThree == 10){
+                thirdTrack.setColumnCount(4);
+                thirdTrack.getLayoutParams().width = (int) (screenWidth*((double) 2048/2048));
+                thirdTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
+                thirdTrack.requestLayout();
+            }
+        }
+
+        //track 4
+        if (trackFourInUse){
+            if (swimmersTrackFour <= 3){
+                fourthTrack.setColumnCount(1);
+                fourthTrack.getLayoutParams().width = (int) (screenWidth*((double) 512/2048));
+                fourthTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
+                fourthTrack.requestLayout();
+            } else if (swimmersTrackFour >= 4){
+                fourthTrack.setColumnCount(2);
+                fourthTrack.getLayoutParams().width = (int) (screenWidth*((double) 1024/2048));
+                fourthTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
+                fourthTrack.requestLayout();
+            } else if (swimmersTrackFour >= 7){
+                fourthTrack.setColumnCount(3);
+                fourthTrack.getLayoutParams().width = (int) (screenWidth*((double) 1536/2048));
+                fourthTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
+                fourthTrack.requestLayout();
+            } else if (swimmersTrackFour == 10){
+                fourthTrack.setColumnCount(4);
+                fourthTrack.getLayoutParams().width = (int) (screenWidth*((double) 2048/2048));
+                fourthTrack.getLayoutParams().height = (int) (screenHeight*((double) 1380/1536));
+                fourthTrack.requestLayout();
+            }
+        }
+    }
+
+    public void checkIfSwimmerDisappeared(){
+        if (!onTrack){
+            Toast.makeText(MainActivity.this, "Boxi hävisi, siirretään roskakoriin.", Toast.LENGTH_SHORT).show();
+            //lastOwner = (ViewGroup) lastBox.getParent();
+            //lastOwner.removeView(lastBox);
+
+            //GridLayout container = (GridLayout) firstTrack;
+            //container.addView(lastBox);
+            // ^ ei toimi , onCreate tyylillä uus boxi
+
+            /*
+            ownerViewGroup = (ViewGroup) viewBox.getParent();
+            ownerViewGroup.removeView(viewBox);
+
+            GridLayout container = (GridLayout) thirdTrack;
+            container.addView(viewBox);
+             */
+
+            /*
+            if (lastBox == swimmerbox1){
+                box1inUse = false;
+            } else if (lastBox == swimmerbox2){
+                box2inUse = false;
+            } else if (lastBox == swimmerbox3){
+                box3inUse = false;
+            } else if (lastBox == swimmerbox4){
+                box4inUse = false;
+            } else if (lastBox == swimmerbox5){
+                box5inUse = false;
+            } else if (lastBox == swimmerbox6){
+                box6inUse = false;
+            }
+            */
+        }
+    }
+
+    public void testForEmptyTracks(){
+        swimmersTrackOne = firstTrack.getChildCount();
+        swimmersTrackTwo = secondTrack.getChildCount();
+        swimmersTrackThree = thirdTrack.getChildCount();
+        swimmersTrackFour = fourthTrack.getChildCount();
+
+        if (swimmersTrackOne == 0 && trackOneInUse && previousAlertDone){
+            removeTrack = 1;
+            previousAlertDone = false;
+            removeTrackPopup();
+        } else if (swimmersTrackTwo == 0 && trackTwoInUse && previousAlertDone){
+            removeTrack = 2;
+            previousAlertDone = false;
+            removeTrackPopup();
+        } else if (swimmersTrackThree == 0 && trackThreeInUse && previousAlertDone){
+            removeTrack = 3;
+            previousAlertDone = false;
+            removeTrackPopup();
+        } else if (swimmersTrackFour == 0 && trackFourInUse && previousAlertDone){
+            removeTrack = 4;
+            previousAlertDone = false;
+            removeTrackPopup();
+        }
+    }
+
+    public void removeTrackPopup(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Radalla " + String.valueOf(removeTrack) + " ei ole yhtään uimaria.");
+        builder.setMessage("Poistetaanko rata?");
+
+        builder.setPositiveButton("KYLLÄ", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                if (removeTrack == 1){
+                    firstTrack.setVisibility(View.GONE);
+                    trackOneInUse = false;
+                } else if (removeTrack == 2){
+                    secondTrack.setVisibility(View.GONE);
+                    trackTwoInUse = false;
+                } else if (removeTrack == 3){
+                    thirdTrack.setVisibility(View.GONE);
+                    trackThreeInUse = false;
+                } else if (removeTrack == 4){
+                    fourthTrack.setVisibility(View.GONE);
+                    trackFourInUse = false;
+                }
+                previousAlertDone = true;
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNegativeButton("EI", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //do nothing
+                previousAlertDone = true;
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
     public void timerButtonPressed(View v){
         if (timerRunning){
             timerRunning = false;
@@ -165,17 +343,13 @@ public class MainActivity extends AppCompatActivity {
             addSwimmerButtonTwo.setVisibility(View.VISIBLE);
             addSwimmerButtonThree.setVisibility(View.VISIBLE);
             addSwimmerButtonFour.setVisibility(View.VISIBLE);
-            if (tracks > 1){
-                deleteTrackButton.setVisibility(View.VISIBLE);
-            }
-            if (tracks < 4){
+            if (!trackOneInUse || !trackTwoInUse || !trackThreeInUse || !trackFourInUse){
                 addTrackButton.setVisibility(View.VISIBLE);
             }
         } else if (!timerRunning) {
             timerRunning = true;
             timerButton.setText("Timer running");
             addTrackButton.setVisibility(View.GONE);
-            deleteTrackButton.setVisibility(View.GONE);
             addSwimmerButtonOne.setVisibility(View.GONE);
             addSwimmerButtonTwo.setVisibility(View.GONE);
             addSwimmerButtonThree.setVisibility(View.GONE);
@@ -184,93 +358,67 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void addTrackButtonPressed(View v){
-        if (tracks == 1){
-            tracks++;
-            setSize();
-            deleteTrackButton.setVisibility(View.VISIBLE);
-        } else if (tracks == 2){
-            tracks++;
-            setSize();
-        } else if (tracks == 3){
-            tracks++;
-            setSize();
-            addTrackButton.setVisibility(View.GONE);
-        }
-    }
-
-    public void deleteTrackButtonPressed(View v){
-        if (tracks == 2){
-            tracks--;
-            setSize();
-            deleteTrackButton.setVisibility(View.GONE);
-        } else if (tracks == 3){
-            tracks--;
-            setSize();
-        } else if (tracks == 4){
-            tracks--;
-            setSize();
-            addTrackButton.setVisibility(View.VISIBLE);
+        if (!trackOneInUse){
+            trackOneInUse = true;
+            firstTrack.setVisibility(View.VISIBLE);
+            columnAndTrackManager();
+        } else if (!trackTwoInUse){
+            trackTwoInUse = true;
+            secondTrack.setVisibility(View.VISIBLE);
+            columnAndTrackManager();
+        } else if (!trackThreeInUse){
+            trackThreeInUse = true;
+            thirdTrack.setVisibility(View.VISIBLE);
+            columnAndTrackManager();
+        } else if (!trackFourInUse){
+            trackFourInUse = true;
+            fourthTrack.setVisibility(View.VISIBLE);
+            columnAndTrackManager();
         }
     }
 
     public void addSwimmerButtonOnePressed(View v){
-        if (totalSwimmers == 6){
-            Toast.makeText(MainActivity.this, "Maksimi määrä uimareita radoilla.", Toast.LENGTH_LONG).show();
-        } else {
-            swimmerBoxManager();
-            ownerViewGroup = (ViewGroup) viewBox.getParent();
-            ownerViewGroup.removeView(viewBox);
+        ownerViewGroup = (ViewGroup) viewBox.getParent();
+        ownerViewGroup.removeView(viewBox);
 
-            GridLayout container = (GridLayout) firstTrack;
-            container.addView(viewBox);
-            viewBox.setVisibility(View.VISIBLE);
-            totalSwimmers++;
-        }
+        GridLayout container = (GridLayout) firstTrack;
+        container.addView(viewBox);
+        viewBox.setVisibility(View.VISIBLE);
+        columnAndTrackManager();
+        swimmerBoxManager();
     }
 
     public void addSwimmerButtonTwoPressed(View v){
-        if (totalSwimmers == 6){
-            Toast.makeText(MainActivity.this, "Maksimi määrä uimareita radoilla.", Toast.LENGTH_LONG).show();
-        } else {
-            swimmerBoxManager();
-            ownerViewGroup = (ViewGroup) viewBox.getParent();
-            ownerViewGroup.removeView(viewBox);
+        ownerViewGroup = (ViewGroup) viewBox.getParent();
+        ownerViewGroup.removeView(viewBox);
 
-            GridLayout container = (GridLayout) secondTrack;
-            container.addView(viewBox);
-            viewBox.setVisibility(View.VISIBLE);
-            totalSwimmers++;
-        }
+        GridLayout container = (GridLayout) secondTrack;
+        container.addView(viewBox);
+        viewBox.setVisibility(View.VISIBLE);
+        columnAndTrackManager();
+        swimmerBoxManager();
     }
 
     public void addSwimmerButtonThreePressed(View v){
-        if (totalSwimmers == 6){
-            Toast.makeText(MainActivity.this, "Maksimi määrä uimareita radoilla.", Toast.LENGTH_LONG).show();
-        } else {
-            swimmerBoxManager();
-            ownerViewGroup = (ViewGroup) viewBox.getParent();
-            ownerViewGroup.removeView(viewBox);
+        ownerViewGroup = (ViewGroup) viewBox.getParent();
+        ownerViewGroup.removeView(viewBox);
 
-            GridLayout container = (GridLayout) thirdTrack;
-            container.addView(viewBox);
-            viewBox.setVisibility(View.VISIBLE);
-            totalSwimmers++;
-        }
+        GridLayout container = (GridLayout) thirdTrack;
+        container.addView(viewBox);
+        viewBox.setVisibility(View.VISIBLE);
+        columnAndTrackManager();
+        swimmerBoxManager();
     }
 
     public void addSwimmerButtonFourPressed(View v){
-        if (totalSwimmers == 6){
-            Toast.makeText(MainActivity.this, "Maksimi määrä uimareita radoilla.", Toast.LENGTH_LONG).show();
-        } else {
-            swimmerBoxManager();
-            ownerViewGroup = (ViewGroup) viewBox.getParent();
-            ownerViewGroup.removeView(viewBox);
+        ownerViewGroup = (ViewGroup) viewBox.getParent();
+        ownerViewGroup.removeView(viewBox);
 
-            GridLayout container = (GridLayout) fourthTrack;
-            container.addView(viewBox);
-            viewBox.setVisibility(View.VISIBLE);
-            totalSwimmers++;
-        }
+        GridLayout container = (GridLayout) fourthTrack;
+        container.addView(viewBox);
+        viewBox.setVisibility(View.VISIBLE);
+        columnAndTrackManager();
+        swimmerBoxManager();
     }
 
     public void swimmerBoxManager(){
@@ -294,6 +442,13 @@ public class MainActivity extends AppCompatActivity {
         } else if (!box6inUse){
             viewBox = (View) swimmerbox6;
             box6inUse = true;
+        }
+
+        if (totalSwimmers == 6){ //jos totalSwimmers laskenta muuttuu voit testata että onko kaikki boxit käytössä
+            addSwimmerButtonOne.setVisibility(View.GONE);
+            addSwimmerButtonTwo.setVisibility(View.GONE);
+            addSwimmerButtonThree.setVisibility(View.GONE);
+            addSwimmerButtonFour.setVisibility(View.GONE);
         }
     }
 
@@ -326,6 +481,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void onEntered(){
+        onTrack = true;
+        Toast.makeText(MainActivity.this, "onTrack: " + onTrack, Toast.LENGTH_SHORT).show();
+    }
+
+    public void onExited(){
+        onTrack = false;
+        Toast.makeText(MainActivity.this, "onTrack: " + onTrack, Toast.LENGTH_SHORT).show();
+    }
+
     class MyDragListener implements OnDragListener {
         Drawable enterShape = getResources().getDrawable(
                 R.drawable.shape_droptarget);
@@ -340,14 +505,18 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case DragEvent.ACTION_DRAG_ENTERED:
                     v.setBackgroundDrawable(enterShape);
+                    onEntered();
                     break;
                 case DragEvent.ACTION_DRAG_EXITED:
                     v.setBackgroundDrawable(normalShape);
+                    onExited();
                     break;
                 case DragEvent.ACTION_DROP:
                     // Dropped, reassign View to ViewGroup
                     View view = (View) event.getLocalState();
+                    lastBox = (View) event.getLocalState();
                     ViewGroup owner = (ViewGroup) view.getParent();
+                    lastOwner = (ViewGroup) view.getParent();
                     owner.removeView(view);
                     GridLayout container = (GridLayout) v;
                     container.addView(view);
@@ -355,6 +524,9 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case DragEvent.ACTION_DRAG_ENDED:
                     v.setBackgroundDrawable(normalShape);
+                    columnAndTrackManager();
+                    testForEmptyTracks();
+                    checkIfSwimmerDisappeared();
                 default:
                     break;
             }
