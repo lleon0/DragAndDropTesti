@@ -13,64 +13,20 @@
         android:background="@drawable/shape"
         android:columnCount="2"
         android:columnWidth="320dp"
-        android:rowCount="2"
+        android:rowCount="3"
         android:stretchMode="columnWidth" >
 
-        <!--
-        <ImageView
-            android:id="@+id/myimage1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher" />
-        -->
-
-        <LinearLayout
-            android:id="@+id/myimage1"
+        <include android:id="@+id/myimage1"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:background="#DD000000"
-            android:orientation="vertical"
-            android:layout_margin="3dp">
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="TextView"
-                android:textColor="#CC0000"/>
-        </LinearLayout>
-
-    </GridLayout>
-
-    <GridLayout
-        android:id="@+id/topright"
-        android:layout_width="0dp"
-        android:layout_weight=".1"
-        android:layout_height="match_parent"
-        android:background="@drawable/shape"
-        android:columnCount="2"
-        android:columnWidth="320dp"
-        android:rowCount="2"
-        android:stretchMode="columnWidth">
+            android:layout_margin="3dp"
+            layout="@layout/swimmer_databox_layout"/>
 
         <include android:id="@+id/myimage2"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_margin="3dp"
             layout="@layout/swimmer_databox_layout"/>
-
-    </GridLayout>
-
-    <GridLayout
-        android:id="@+id/bottomleft"
-        android:layout_width="0dp"
-        android:layout_weight=".1"
-        android:layout_height="match_parent"
-        android:background="@drawable/shape"
-        android:columnCount="2"
-        android:columnWidth="320dp"
-        android:rowCount="2"
-        android:stretchMode="columnWidth">
 
         <include android:id="@+id/myimage3"
             android:layout_width="80dp"
@@ -92,31 +48,41 @@
 
     </GridLayout>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="NewDatabox"
-        android:text="New"/>
-
-    <!--<GridLayout
-        android:id="@+id/bottomright"
+    <GridLayout
+        android:id="@+id/topright"
         android:layout_width="0dp"
         android:layout_weight=".1"
         android:layout_height="match_parent"
         android:background="@drawable/shape"
         android:columnCount="2"
         android:columnWidth="320dp"
-        android:rowCount="2"
-        android:stretchMode="columnWidth">
+        android:rowCount="3"
+        android:stretchMode="columnWidth"
+        android:visibility="gone">
 
-        <LinearLayout
-            android:id="@+id/myimage4"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@mipmap/ic_launcher"
-            android:orientation="vertical">
-        </LinearLayout>
+    </GridLayout>
 
-    </GridLayout>-->
+    <GridLayout
+        android:id="@+id/bottomleft"
+        android:layout_width="0dp"
+        android:layout_weight=".1"
+        android:layout_height="match_parent"
+        android:background="@drawable/shape"
+        android:columnCount="2"
+        android:columnWidth="320dp"
+        android:rowCount="3"
+        android:stretchMode="columnWidth"
+        android:visibility="gone">
+
+    </GridLayout>
+
+    <Button
+        android:id="@+id/hide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="NewDatabox"
+        android:text="New"/>
+
+
 
 </LinearLayout>

@@ -15,13 +15,16 @@ import android.view.View.DragShadowBuilder;
 import android.view.View.OnDragListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.GridLayout;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private GridLayout topLeft;
+    private GridLayout topLeft, topRight, bottomLeft;
+    boolean isItgone = true;
+    private Button Hide;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +32,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         topLeft = findViewById(R.id.topleft);
-        //topLeft = findViewById(R.id.topleft);
+        topRight = findViewById(R.id.topright);
+        bottomLeft = findViewById(R.id.bottomleft);
+        Hide = findViewById(R.id.hide);
+
         findViewById(R.id.myimage1).setOnTouchListener(new MyTouchListener());
         findViewById(R.id.myimage2).setOnTouchListener(new MyTouchListener());
         findViewById(R.id.myimage3).setOnTouchListener(new MyTouchListener());
@@ -38,9 +44,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.topleft).setOnDragListener(new MyDragListener());
         findViewById(R.id.topright).setOnDragListener(new MyDragListener());
         findViewById(R.id.bottomleft).setOnDragListener(new MyDragListener());
-        //findViewById(R.id.bottomright).setOnDragListener(new MyDragListener());
 
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        /*LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View myimage6 = inflater.inflate(R.layout.swimmer_databox_layout, null);
         // Add the new row before the add field button.
 
@@ -53,55 +58,30 @@ public class MainActivity extends AppCompatActivity {
         myimage6.requestLayout();
 
         topLeft.addView(myimage6, topLeft.getChildCount() - 1);
-        myimage6.setOnTouchListener(new MyTouchListener());
-
-        /*
-        // Creating a new RelativeLayout
-        LinearLayout linearLayout = new LinearLayout(this);
-
-        // Defining the RelativeLayout layout parameters.
-        // In this case I want to fill its parent
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-
-        linearLayout.setLayoutParams(params);
-        linearLayout.setOrientation(LinearLayout.VERTICAL);
-
-        topLeft.addView(linearLayout);
-
-        // Creating a new TextView
-        TextView tv = new TextView(this);
-        tv.setText("Test");
-
-        // Defining the layout parameters of the TextView
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-
-        // Setting the parameters on the TextView
-        tv.setLayoutParams(lp);
-
-        // Adding the TextView to the RelativeLayout as a child
-        linearLayout.addView(tv);
-        */
+        myimage6.setOnTouchListener(new MyTouchListener());*/
     }
 
     public void NewDatabox(View view) {
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View myimage6 = inflater.inflate(R.layout.swimmer_databox_layout, null);
-        // Add the new row before the add field button.
-
-        myimage6.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
-
-        myimage6.getLayoutParams().width = (int) 120;
-        myimage6.getLayoutParams().height = (int) 120;
-        myimage6.requestLayout();
-
-        topLeft.addView(myimage6, topLeft.getChildCount() - 1);
-        myimage6.setOnTouchListener(new MyTouchListener());
+        if (isItgone){
+            topRight.setVisibility(View.VISIBLE);
+            bottomLeft.setVisibility(View.VISIBLE);
+            for (int i = 0; i < bottomLeft.getChildCount(); i++) {
+                View child = bottomLeft.getChildAt(i);
+                //child.setEnabled(false);
+                child.setVisibility(View.VISIBLE);
+            }
+            isItgone = false;
+        }
+        else if (!isItgone){
+            topRight.setVisibility(View.GONE);
+            bottomLeft.setVisibility(View.GONE);
+            for (int i = 0; i < bottomLeft.getChildCount(); i++) {
+                View child = bottomLeft.getChildAt(i);
+                //child.setEnabled(false);
+                child.setVisibility(View.GONE);
+            }
+            isItgone = true;
+        }
     }
 
     private final class MyTouchListener implements OnTouchListener {
@@ -130,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
             switch (event.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     // do nothing
+                    Hide.setVisibility(View.GONE);
+                    bottomLeft.setVisibility(View.VISIBLE);
                     break;
                 case DragEvent.ACTION_DRAG_ENTERED:
                     v.setBackground(enterShape);
@@ -149,7 +131,14 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case DragEvent.ACTION_DRAG_ENDED:
                     //v.setBackgroundDrawable(normalShape);
+                    for (int i = 0; i < bottomLeft.getChildCount(); i++) {
+                        View child = bottomLeft.getChildAt(i);
+                        //child.setEnabled(false);
+                        child.setVisibility(View.GONE);
+                    }
+                    bottomLeft.setVisibility(View.GONE);
                     v.setBackground(normalShape);
+                    Hide.setVisibility(View.VISIBLE);
                 default:
                     break;
             }
